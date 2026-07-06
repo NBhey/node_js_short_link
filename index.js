@@ -6,13 +6,22 @@ const PORT = 5000;
 const server = http.createServer((request, response) => {
   const url = request.url;
   const method = request.method;
-  console.log(url, method);
 
   if (url === "/" && method === "GET") {
     response.statusCode = 200;
     response.setHeader("Content-Type", "text/plain; charset=utf-8");
     response.end("Привет, вы на главной странице");
   } else if (url === "/shorten" && method === "POST") {
+    const chunks = [];
+    request.on("data", (chunk) => {
+      chunks.push(chunk);
+    });
+    request.on("end", (chunk) => {
+      const data = Buffer.concat(chunks);
+      console.log(data);
+      console.log(JSON.parse(data));
+    });
+
     response.statusCode = 200;
     response.setHeader("Content-Type", "text/plain; charset=utf-8");
     response.end("Вы получили данные от POST");
