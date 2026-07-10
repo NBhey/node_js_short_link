@@ -9,6 +9,8 @@ function getLinkCode() {
   return randomBytes(4).toString("base64url");
 }
 
+const codeCollection = new Map();
+
 const server = http.createServer((request, response) => {
   const url = request.url;
   const method = request.method;
@@ -17,20 +19,20 @@ const server = http.createServer((request, response) => {
     response.statusCode = 200;
     response.setHeader("Content-Type", "text/plain; charset=utf-8");
     response.end("Привет, вы на главной странице");
-
-    console.log(getLinkCode());
   } else if (url === "/shorten" && method === "POST") {
     const chunks = [];
     request.on("data", (chunk) => {
       chunks.push(chunk);
     });
     request.on("end", () => {
-      console.log(chunks);
       const data = Buffer.concat(chunks);
-      console.log(data.toString());
-      console.log(JSON.parse(data));
+      const json = JSON.parse(data);
+      console.log(json);
+      codeCollection.set(getLinkCode(), json.target);
+      console.log("судя по всему асинхронный", codeCollection);
     });
 
+    console.log("в потоке", codeCollection);
     response.statusCode = 200;
     response.setHeader("Content-Type", "text/plain; charset=utf-8");
     response.end("Вы получили данные от POST");
