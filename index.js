@@ -41,6 +41,10 @@ const server = http.createServer((request, response) => {
     response.statusCode = 302;
     response.setHeader("Location", "https://profile.nbhey.ru");
     response.end();
+  } else if (codeCollection.has(url.slice(1)) && method === "GET") {
+    response
+      .writeHead(302, { Location: codeCollection.get(url.slice(1)) })
+      .end();
   } else {
     response.statusCode = 404;
     response.setHeader("Content-Type", "text/plain; charset=utf-8");
