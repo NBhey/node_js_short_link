@@ -21,21 +21,32 @@ const server = http.createServer((request, response) => {
     response.end("Привет, вы на главной странице");
   } else if (url === "/shorten" && method === "POST") {
     const chunks = [];
+    const linkCode = getLinkCode();
+
     request.on("data", (chunk) => {
       chunks.push(chunk);
     });
+
     request.on("end", () => {
       const data = Buffer.concat(chunks);
       const json = JSON.parse(data);
-      console.log(json);
-      codeCollection.set(getLinkCode(), json.target);
-      console.log("судя по всему асинхронный", codeCollection);
-    });
 
-    console.log("в потоке", codeCollection);
-    response.statusCode = 200;
-    response.setHeader("Content-Type", "text/plain; charset=utf-8");
-    response.end("Вы получили данные от POST");
+      codeCollection.set(linkCode, json.target);
+
+      if (codeCollection.has(linkCode)) {
+        response.statusCode = 201;
+        response.setHeader("Content-Type", "text/plain; charset=utf-8");
+        response.end(
+          "Ваш сокращенный адрес для перехода " +
+            "http://localhost:5000/" +
+            linkCode,
+        );
+      } else {
+        response.statusCode = 500;
+        response.setHeader("Content-Type", "text/plain; charset=utf-8");
+        response.end("Адрес не преобразован, ошибка на сервере");
+      }
+    });
   } else if (codeCollection.has(url.slice(1)) && method === "GET") {
     response
       .writeHead(302, { Location: codeCollection.get(url.slice(1)) })
