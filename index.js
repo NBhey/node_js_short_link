@@ -28,12 +28,12 @@ const server = http.createServer((request, response) => {
     });
 
     request.on("end", () => {
-      const data = Buffer.concat(chunks);
-      const json = JSON.parse(data);
+      try {
+        const data = Buffer.concat(chunks);
+        const json = JSON.parse(data);
 
-      codeCollection.set(linkCode, json.target);
+        codeCollection.set(linkCode, json.target);
 
-      if (codeCollection.has(linkCode)) {
         response.statusCode = 201;
         response.setHeader("Content-Type", "text/plain; charset=utf-8");
         response.end(
@@ -41,10 +41,10 @@ const server = http.createServer((request, response) => {
             "http://localhost:5000/" +
             linkCode,
         );
-      } else {
-        response.statusCode = 500;
+      } catch (error) {
+        response.statusCode = 400;
         response.setHeader("Content-Type", "text/plain; charset=utf-8");
-        response.end("Адрес не преобразован, ошибка на сервере");
+        response.end("Введите корректные данные");
       }
     });
   } else if (codeCollection.has(url.slice(1)) && method === "GET") {
