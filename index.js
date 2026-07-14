@@ -21,18 +21,16 @@ const server = http.createServer((request, response) => {
     response.end("Привет, вы на главной странице");
   } else if (url === "/shorten" && method === "POST") {
     const chunks = [];
-    const linkCode = getLinkCode();
 
     request.on("data", (chunk) => {
       chunks.push(chunk);
     });
 
     request.on("end", () => {
+      let json;
       try {
         const data = Buffer.concat(chunks);
-        const json = JSON.parse(data);
-
-        codeCollection.set(linkCode, json.target);
+        json = JSON.parse(data);
 
         response.statusCode = 201;
         response.setHeader("Content-Type", "text/plain; charset=utf-8");
@@ -46,6 +44,9 @@ const server = http.createServer((request, response) => {
         response.setHeader("Content-Type", "text/plain; charset=utf-8");
         response.end("Введите корректные данные");
       }
+
+      const linkCode = getLinkCode();
+      codeCollection.set(linkCode, json.target);
     });
   } else if (codeCollection.has(url.slice(1)) && method === "GET") {
     response
