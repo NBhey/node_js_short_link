@@ -21,32 +21,42 @@ const server = http.createServer((request, response) => {
     response.end("Привет, вы на главной странице");
   } else if (url === "/shorten" && method === "POST") {
     const chunks = [];
+    let json;
 
     request.on("data", (chunk) => {
       chunks.push(chunk);
     });
 
     request.on("end", () => {
-      let json;
       try {
         const data = Buffer.concat(chunks);
         json = JSON.parse(data);
-
-        response.statusCode = 201;
-        response.setHeader("Content-Type", "text/plain; charset=utf-8");
-        response.end(
-          "Ваш сокращенный адрес для перехода " +
-            "http://localhost:5000/" +
-            linkCode,
-        );
       } catch (error) {
         response.statusCode = 400;
         response.setHeader("Content-Type", "text/plain; charset=utf-8");
         response.end("Введите корректные данные");
+        return;
       }
 
       const linkCode = getLinkCode();
-      codeCollection.set(linkCode, json.target);
+
+      if (json !== null && json.hasOwnProperty("target")) {
+        codeCollection.set(linkCode, json.target);
+      } else {
+        response.statusCode = 422;
+        response.setHeader("Content-Type", "text/plain; charset=utf-8");
+        response.end("Отсутствует поле target");
+
+        return;
+      }
+
+      response.statusCode = 201;
+      response.setHeader("Content-Type", "text/plain; charset=utf-8");
+      response.end(
+        "Ваш сокращенный адрес для перехода " +
+          "http://localhost:5000/" +
+          linkCode,
+      );
     });
   } else if (codeCollection.has(url.slice(1)) && method === "GET") {
     response
