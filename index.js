@@ -1,6 +1,7 @@
 const http = require("node:http");
 const { randomBytes } = require("node:crypto");
 const { Buffer } = require("node:buffer");
+const fs = require("node:fs");
 
 const IP = "127.0.0.1";
 const PORT = 5000;
@@ -42,6 +43,19 @@ const server = http.createServer((request, response) => {
 
       if (json !== null && json.hasOwnProperty("target")) {
         codeCollection.set(linkCode, json.target);
+        const collectionString = JSON.stringify(
+          Object.fromEntries(codeCollection),
+        );
+        fs.writeFile(
+          "redirect_url_collection.txt",
+          collectionString,
+          (error) => {
+            if (error) {
+              throw error;
+            }
+            console.log("Файл сохранен");
+          },
+        );
       } else {
         response.statusCode = 422;
         response.setHeader("Content-Type", "text/plain; charset=utf-8");
