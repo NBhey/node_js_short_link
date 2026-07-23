@@ -10,7 +10,14 @@ function getLinkCode() {
   return randomBytes(4).toString("base64url");
 }
 
-const codeCollection = new Map();
+const REDIRECT_URL_COLLECTION = fs.readFileSync(
+  "redirect_url_collection.txt",
+  "utf-8",
+);
+
+const codeCollection = new Map(
+  Object.entries(JSON.parse(REDIRECT_URL_COLLECTION)),
+);
 
 const server = http.createServer((request, response) => {
   const url = request.url;
@@ -43,14 +50,15 @@ const server = http.createServer((request, response) => {
 
       if (json !== null && json.hasOwnProperty("target")) {
         codeCollection.set(linkCode, json.target);
-        const collectionString = JSON.stringify(
+
+        const codeCollectionString = JSON.stringify(
           Object.fromEntries(codeCollection),
         );
 
         try {
           await fs.promises.writeFile(
             "redirect_url_collection.txt",
-            collectionString,
+            codeCollectionString,
           );
 
           response.statusCode = 201;
