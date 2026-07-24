@@ -46,9 +46,8 @@ const server = http.createServer((request, response) => {
         return;
       }
 
-      const linkCode = getLinkCode();
-
       if (json !== null && json.hasOwnProperty("target")) {
+        const linkCode = getLinkCode();
         codeCollection.set(linkCode, json.target);
 
         const codeCollectionString = JSON.stringify(
@@ -77,8 +76,6 @@ const server = http.createServer((request, response) => {
         response.statusCode = 422;
         response.setHeader("Content-Type", "text/plain; charset=utf-8");
         response.end("Отсутствует поле target");
-
-        return;
       }
     });
   } else if (codeCollection.has(url.slice(1)) && method === "GET") {
