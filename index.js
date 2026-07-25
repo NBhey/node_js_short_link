@@ -11,15 +11,12 @@ function getLinkCode() {
   return randomBytes(4).toString("base64url");
 }
 
-const getUrlCollectionPath = path.join(
-  __dirname,
-  "redirect_url_collection.txt",
-);
+const URL_COLLECTION_PATH = path.join(__dirname, "redirect_url_collection.txt");
 
 function initCodeCollection() {
   try {
     const REDIRECT_URL_COLLECTION = fs.readFileSync(
-      getUrlCollectionPath,
+      URL_COLLECTION_PATH,
       "utf-8",
     );
     return new Map(Object.entries(JSON.parse(REDIRECT_URL_COLLECTION)));
@@ -71,7 +68,7 @@ const server = http.createServer((request, response) => {
 
         try {
           await fs.promises.writeFile(
-            getUrlCollectionPath,
+            URL_COLLECTION_PATH,
             codeCollectionString,
           );
 
