@@ -2,6 +2,7 @@ const http = require("node:http");
 const { randomBytes } = require("node:crypto");
 const { Buffer } = require("node:buffer");
 const fs = require("node:fs");
+const path = require("node:path");
 
 const IP = "127.0.0.1";
 const PORT = 5000;
@@ -10,10 +11,15 @@ function getLinkCode() {
   return randomBytes(4).toString("base64url");
 }
 
+const getUrlCollectionPath = path.join(
+  __dirname,
+  "redirect_url_collection.txt",
+);
+
 function initCodeCollection() {
   try {
     const REDIRECT_URL_COLLECTION = fs.readFileSync(
-      "./redirect_url_collection.txt",
+      getUrlCollectionPath,
       "utf-8",
     );
     return new Map(Object.entries(JSON.parse(REDIRECT_URL_COLLECTION)));
@@ -65,7 +71,7 @@ const server = http.createServer((request, response) => {
 
         try {
           await fs.promises.writeFile(
-            "redirect_url_collection.txt",
+            getUrlCollectionPath,
             codeCollectionString,
           );
 
