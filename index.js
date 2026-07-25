@@ -10,14 +10,23 @@ function getLinkCode() {
   return randomBytes(4).toString("base64url");
 }
 
-const REDIRECT_URL_COLLECTION = fs.readFileSync(
-  "redirect_url_collection.txt",
-  "utf-8",
-);
+function initCodeCollection() {
+  try {
+    const REDIRECT_URL_COLLECTION = fs.readFileSync(
+      "./redirect_url_collection.txt",
+      "utf-8",
+    );
+    return new Map(Object.entries(JSON.parse(REDIRECT_URL_COLLECTION)));
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      console.log("Файл не был прочитан");
+      return new Map();
+    }
+    throw error;
+  }
+}
 
-const codeCollection = new Map(
-  Object.entries(JSON.parse(REDIRECT_URL_COLLECTION)),
-);
+const codeCollection = initCodeCollection();
 
 const server = http.createServer((request, response) => {
   const url = request.url;
