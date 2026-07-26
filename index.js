@@ -70,7 +70,9 @@ const server = http.createServer((request, response) => {
       if (
         json !== null &&
         json.hasOwnProperty("target") &&
-        URL.canParse(json.target)
+        URL.canParse(json.target) &&
+        (new URL(json.target).protocol === "http:" ||
+          new URL(json.target).protocol === "https:")
       ) {
         const { hasInCodeCollection, linkCode } =
           checkShortenLinkInCodeCollection(codeCollection, json.target);
@@ -118,7 +120,11 @@ const server = http.createServer((request, response) => {
           response.end("Отсутствует поле target");
           return;
         }
-        if (!URL.canParse(json.target)) {
+        if (
+          !URL.canParse(json.target) ||
+          !(new URL(json.target).protocol === "http:") ||
+          !(new URL(json.target).protocol === "https:")
+        ) {
           response.end(
             "Неверное значение в полне ввода, используйте URL согласно примеру: https://example.com",
           );
