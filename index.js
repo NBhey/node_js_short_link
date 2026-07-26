@@ -11,6 +11,15 @@ function getLinkCode() {
   return randomBytes(4).toString("base64url");
 }
 
+function checkShortenLinkInCodeCollection(codeCollection, userLink) {
+  for (let [linkCode, saveUserLink] of codeCollection.entries()) {
+    if (saveUserLink === userLink) {
+      return { hasInCodeCollection: true, linkCode };
+    }
+  }
+  return { hasInCodeCollection: false, linkCode: getLinkCode() };
+}
+
 const URL_COLLECTION_PATH = path.join(__dirname, "redirect_url_collection.txt");
 
 function initCodeCollection() {
@@ -58,8 +67,25 @@ const server = http.createServer((request, response) => {
         return;
       }
 
-      if (json !== null && json.hasOwnProperty("target")) {
-        const linkCode = getLinkCode();
+      if (
+        json !== null &&
+        json.hasOwnProperty("target") &&
+        URL.canParse(json.target)
+      ) {
+        const { hasInCodeCollection, linkCode } =
+          checkShortenLinkInCodeCollection(codeCollection, json.target);
+
+        if (hasInCodeCollection) {
+          response.statusCode = 201;
+          response.setHeader("Content-Type", "text/plain; charset=utf-8");
+          response.end(
+            "Ваш сокращенный адрес для перехода " +
+              "http://localhost:5000/" +
+              linkCode,
+          );
+          return;
+        }
+
         codeCollection.set(linkCode, json.target);
 
         const codeCollectionString = JSON.stringify(
@@ -87,7 +113,17 @@ const server = http.createServer((request, response) => {
       } else {
         response.statusCode = 422;
         response.setHeader("Content-Type", "text/plain; charset=utf-8");
-        response.end("Отсутствует поле target");
+
+        if (!json.hasOwnProperty("target")) {
+          response.end("Отсутствует поле target");
+          return;
+        }
+        if (!URL.canParse(json.target)) {
+          response.end(
+            "Неверное значение в полне ввода, используйте URL согласно примеру: https://example.com",
+          );
+          return;
+        }
       }
     });
   } else if (codeCollection.has(url.slice(1)) && method === "GET") {
