@@ -116,7 +116,7 @@ const server = http.createServer((request, response) => {
         response.statusCode = 422;
         response.setHeader("Content-Type", "text/plain; charset=utf-8");
 
-        if (!json.hasOwnProperty("target")) {
+        if (json === null || !json.hasOwnProperty("target")) {
           response.end("Отсутствует поле target");
           return;
         }
