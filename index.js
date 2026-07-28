@@ -122,11 +122,11 @@ const server = http.createServer((request, response) => {
         }
         if (
           !URL.canParse(json.target) ||
-          !(new URL(json.target).protocol === "http:") ||
-          !(new URL(json.target).protocol === "https:")
+          (new URL(json.target).protocol !== "http:" &&
+            new URL(json.target).protocol !== "https:")
         ) {
           response.end(
-            "Неверное значение в полне ввода, используйте URL согласно примеру: https://example.com",
+            "Неверное значение в поле ввода, используйте URL согласно примеру: https://example.com",
           );
           return;
         }
