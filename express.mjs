@@ -11,6 +11,10 @@ app.get("/json", (request, response) => {
   response.send({ field: "Hello world" });
 });
 
+app.get("/:code", (request, response) => {
+  response.send(request.params.code);
+});
+
 app.listen(PORT, () => {
   console.log("Приложение запущено на " + PORT + " порту");
 });
