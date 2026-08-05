@@ -2,6 +2,7 @@ import express from "express";
 
 const app = express();
 const PORT = 5001;
+const urlCollection = new Map([["abc123", "https://example.com"]]);
 
 app.get("/", (request, response) => {
   response.send("Hello Express!");
@@ -12,7 +13,7 @@ app.get("/json", (request, response) => {
 });
 
 app.get("/:code", (request, response) => {
-  response.send(request.params.code);
+  response.redirect(urlCollection.get(request.params.code));
 });
 
 app.listen(PORT, () => {
