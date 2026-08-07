@@ -13,7 +13,13 @@ app.get("/json", (request, response) => {
 });
 
 app.get("/:code", (request, response) => {
-  response.redirect(urlCollection.get(request.params.code));
+  const code = request.params.code;
+
+  if (!urlCollection.has(code)) {
+    response.status(404).send("такого роута нет");
+    return;
+  }
+  response.redirect(urlCollection.get(code));
 });
 
 app.listen(PORT, () => {
