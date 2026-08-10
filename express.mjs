@@ -12,13 +12,13 @@ app.get("/json", (request, response) => {
   response.send({ field: "Hello world" });
 });
 
-app.use(express.json());
-
 app.post("/shorten", (request, response) => {
   console.log(request.body);
 
   response.send("ok");
 });
+
+app.use(express.json());
 
 app.get("/:code", (request, response) => {
   const code = request.params.code;
