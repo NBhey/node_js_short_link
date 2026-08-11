@@ -4,6 +4,8 @@ const app = express();
 const PORT = 5001;
 const urlCollection = new Map([["abc123", "https://example.com"]]);
 
+app.use(express.json());
+
 app.get("/", (request, response) => {
   response.send("Hello Express!");
 });
@@ -17,8 +19,6 @@ app.post("/shorten", (request, response) => {
 
   response.send("ok");
 });
-
-app.use(express.json());
 
 app.get("/:code", (request, response) => {
   const code = request.params.code;
