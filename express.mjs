@@ -1,4 +1,5 @@
 import express from "express";
+import { randomBytes } from "node:crypto";
 
 const app = express();
 const PORT = 5001;
@@ -16,7 +17,7 @@ app.get("/json", (request, response) => {
 
 app.post("/shorten", (request, response) => {
   console.log(request.body);
-
+  console.log(randomBytes(4).toString("base64url"));
   response.send("ok");
 });
 
