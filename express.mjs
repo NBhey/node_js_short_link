@@ -3,7 +3,7 @@ import { randomBytes } from "node:crypto";
 
 const app = express();
 const PORT = 5001;
-const urlCollection = new Map([["abc123", "https://example.com"]]);
+const urlCollection = new Map();
 
 app.use(express.json());
 
@@ -16,9 +16,10 @@ app.get("/json", (request, response) => {
 });
 
 app.post("/shorten", (request, response) => {
-  console.log(request.body);
-  console.log(randomBytes(4).toString("base64url"));
+  urlCollection.set(randomBytes(4).toString("base64url"), request.body.target);
   response.send("ok");
+
+  console.log(urlCollection);
 });
 
 app.get("/:code", (request, response) => {
