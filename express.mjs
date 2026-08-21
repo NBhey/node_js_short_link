@@ -16,10 +16,12 @@ app.get("/json", (request, response) => {
 });
 
 app.post("/shorten", (request, response) => {
-  urlCollection.set(randomBytes(4).toString("base64url"), request.body.target);
-  response.send("ok");
+  const hashLink = randomBytes(4).toString("base64url");
 
-  console.log(urlCollection);
+  urlCollection.set(hashLink, request.body.target);
+  response.send(
+    "Ваш сокращенный адрес для перехода " + "http://localhost:5000/" + hashLink,
+  );
 });
 
 app.get("/:code", (request, response) => {
