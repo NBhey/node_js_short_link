@@ -20,7 +20,9 @@ app.post("/shorten", (request, response) => {
 
   urlCollection.set(hashLink, request.body.target);
   response.send(
-    "Ваш сокращенный адрес для перехода " + "http://localhost:5000/" + hashLink,
+    "Ваш сокращенный адрес для перехода " +
+      `http://localhost:${PORT}/` +
+      hashLink,
   );
 });
 
