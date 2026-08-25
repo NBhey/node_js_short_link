@@ -27,13 +27,17 @@ app.post("/shorten", (request, response) => {
 });
 
 app.get("/:code", (request, response) => {
-  const code = request.params.code;
+  const { code } = request.params;
 
   if (!urlCollection.has(code)) {
     response.status(404).send("такого роута нет");
     return;
   }
   response.redirect(urlCollection.get(code));
+});
+
+app.use((req, res, next) => {
+  res.status(404).send("пишу из middleware, такого роута нет");
 });
 
 app.listen(PORT, () => {
