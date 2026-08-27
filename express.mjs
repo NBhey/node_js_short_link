@@ -16,14 +16,26 @@ app.get("/json", (request, response) => {
 });
 
 app.post("/shorten", (request, response) => {
-  const hashLink = randomBytes(4).toString("base64url");
+  if (!request.body) {
+    response.status(404);
+    response.send("отсутствует тело");
+    return;
+  } else if (request.body && !request.body.hasOwnProperty("target")) {
+    response.status(404);
+    response.send("отсутствует поле target, проверьте вводимые данные");
+    return;
+  }
 
-  urlCollection.set(hashLink, request.body.target);
+  const codeLink = randomBytes(4).toString("base64url");
+  urlCollection.set(codeLink, request.body.target);
+
   response.send(
     "Ваш сокращенный адрес для перехода " +
       `http://localhost:${PORT}/` +
-      hashLink,
+      codeLink,
   );
+
+  return;
 });
 
 app.get("/:code", (request, response) => {
