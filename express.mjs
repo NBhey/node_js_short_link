@@ -17,11 +17,11 @@ app.get("/json", (request, response) => {
 
 app.post("/shorten", (request, response) => {
   if (!request.body) {
-    response.status(404);
+    response.status(400);
     response.send("отсутствует тело");
     return;
   } else if (request.body && !request.body.hasOwnProperty("target")) {
-    response.status(404);
+    response.status(400);
     response.send("отсутствует поле target, проверьте вводимые данные");
     return;
   }
