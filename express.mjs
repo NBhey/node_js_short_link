@@ -20,7 +20,7 @@ app.post("/shorten", (request, response) => {
     response.status(400);
     response.send("отсутствует тело");
     return;
-  } else if (request.body && !request.body.hasOwnProperty("target")) {
+  } else if (!request.body.hasOwnProperty("target")) {
     response.status(400);
     response.send("отсутствует поле target, проверьте вводимые данные");
     return;
@@ -34,8 +34,6 @@ app.post("/shorten", (request, response) => {
       `http://localhost:${PORT}/` +
       codeLink,
   );
-
-  return;
 });
 
 app.get("/:code", (request, response) => {
